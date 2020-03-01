@@ -7,8 +7,8 @@ spec:
   ports:
     - name: "http-port"
       protocol: "TCP"
-      port: 8080
-      targetPort: 8080
+      port: 8000
+      targetPort: 8000
       nodePort: 30080
   selector:
     app: django
@@ -34,8 +34,8 @@ spec:
         image: yoshiaki1226/subscmanagement_django:2.0
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080
-        command: ["python3", "/app/manage.py", "runserver", "0.0.0.0:8080"]
+        - containerPort: 8000
+        command: ["python3", "/app/manage.py", "runserver", "0.0.0.0:8000"]
         tty: true
 ---
 apiVersion: v1
