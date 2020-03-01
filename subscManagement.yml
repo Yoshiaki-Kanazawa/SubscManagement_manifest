@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+spec:
+  type: NodePort
+  ports:
+    - name: "http-port"
+      protocol: "TCP"
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080
+  selector:
+    app: django
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+  labels:
+    app: django
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: django
+  template:
+    metadata:
+      labels:
+        app: django
+    spec:
+      containers:
+      - name: subscmanagement-django
+        image: yoshiaki1226/subscmanagement_django:1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        command: ["python3", "/app/manage.py", "runserver", "0.0.0.0:8080"]
+        tty: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  type: ClusterIP
+  ports:
+    - name: "http-port"
+      protocol: "TCP"
+      port: 3306
+      targetPort: 3306
+  selector:
+    db: mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  labels:
+    db: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      db: mysql
+  template:
+    metadata:
+      labels:
+        db: mysql
+    spec:
+      containers:
+      - name: subscmanagement-db
+        image: yoshiaki1226/subscmanagement_db:1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3306
+        tty: true
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        - name: MYSQL_USER
+          value: "apuser"
+        - name: MYSQL_PASSWORD
+          value: "password"
+        - name: MYSQL_DATABASE
+          value: "subscManagement"
+        - name: TZ
+          value: "Asia/Tokyo"
+        - name: BIND-ADDRESS
+          value: "0.0.0.0"
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: db-data
+      volumes:
+      - name: db-data
