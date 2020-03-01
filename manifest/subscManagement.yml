@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: subscmanagement-django
-        image: yoshiaki1226/subscmanagement_django:1.0
+        image: yoshiaki1226/subscmanagement_django:2.0
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
